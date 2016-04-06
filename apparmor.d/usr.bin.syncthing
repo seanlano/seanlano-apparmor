@@ -24,6 +24,7 @@
 
   # Needs to be able to read these to work properly
   /run/resolvconf/resolv.conf r,
+  /etc/resolv.conf r,
   /etc/hosts r,
   /etc/host.conf r,
   /etc/gai.conf r,
