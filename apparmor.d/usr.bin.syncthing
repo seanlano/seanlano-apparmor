@@ -1,15 +1,18 @@
 ## This profile assumes that Syncthing is being run by the
 ## user who owns the files and folders being synchronised and that
-## only files in ~/Documents, ~/Downloads, ~/Pictures, ~/Public, 
+## only files in ~/Documents, ~/Downloads, ~/Pictures, ~/Public, ~/Music,
 ## or ~/Videos are being synced. Access is denied to all other folders. 
 ## This profile assume APT is in charge of updating syncthing, and not
-## the built-in updater. 
+## the built-in updater. The private-files-strict abstraction is used to
+## protect from user-added rules that might accidentally grant more 
+## permissions than intended. 
 
 
 #include <tunables/global>
 
 /usr/bin/syncthing {
   #include <abstractions/base>
+  #include <abstractions/private-files-strict>
   #include <local/usr.bin.syncthing>
 
   # Obviously needs Internet access to work.
