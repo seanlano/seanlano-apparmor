@@ -1,0 +1,60 @@
+## This profile assumes that Syncthing is being run by the
+## user who owns the files and folders being synchronised and that
+## only files in ~/Documents, ~/Downloads, ~/Pictures, ~/Public, 
+## or ~/Videos are being synced. Access is denied to all other folders. 
+## This profile assume APT is in charge of updating syncthing, and not
+## the built-in updater. 
+
+
+#include <tunables/global>
+
+/usr/bin/syncthing {
+  #include <abstractions/base>
+  #include <local/usr.bin.syncthing>
+
+  # Obviously needs Internet access to work.
+  network inet,
+  network inet6,
+
+  # Wants read access to SOMAXCONN
+  /proc/sys/net/core/somaxconn r,
+
+  # Allow confined execute of binary
+  /usr/bin/syncthing cx,
+
+  # Needs to be able to read these to work properly
+  /run/resolvconf/resolv.conf r,
+  /etc/resolv.conf r,
+  /etc/hosts r,
+  /etc/host.conf r,
+  /etc/gai.conf r,
+  /etc/nsswitch.conf r,
+  /etc/ssl/certs/** r,
+
+  # Allow full access to config directory.
+  owner @{HOME}/.config/syncthing/ rw,
+  owner @{HOME}/.config/syncthing/** rwk,
+
+
+  # Allow read/write to these user locations, i.e. only these
+  # directories can be synced by Syncthing. 
+  # Additional locations can be allowed in "local/usr.bin.syncthing"
+  owner @{HOME}/Documents/ rw,
+  owner @{HOME}/Documents/** rw,
+
+  owner @{HOME}/Downloads/ rw,
+  owner @{HOME}/Downloads/** rw,
+
+  owner @{HOME}/Pictures/ rw,
+  owner @{HOME}/Pictures/** rw,
+
+  owner @{HOME}/Public/ rw,
+  owner @{HOME}/Public/** rw,
+
+  owner @{HOME}/Videos/ rw,
+  owner @{HOME}/Videos/** rw,
+  
+  owner @{HOME}/Music/ rw,
+  owner @{HOME}/Music/** rw,
+
+}
