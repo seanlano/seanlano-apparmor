@@ -10,6 +10,7 @@
 
 /usr/bin/syncthing {
   #include <abstractions/base>
+  #include <local/usr.bin.syncthing>
 
   # Obviously needs Internet access to work.
   network inet,
@@ -34,8 +35,9 @@
   owner @{HOME}/.config/syncthing/** rwk,
 
 
-  # Allow read/write to these user locations.
-  # These should probably be covered by abstractions instead (?)
+  # Allow read/write to these user locations, i.e. only these
+  # directories can be synced by Syncthing. 
+  # Additional locations can be allowed in "local/usr.bin.syncthing"
   owner @{HOME}/Documents/ rw,
   owner @{HOME}/Documents/** rw,
 

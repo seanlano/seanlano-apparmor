@@ -1,0 +1,7 @@
+# Site-specific additions and overrides for usr.sbin.syncthing.
+# For more details, please see /etc/apparmor.d/local/README.
+
+  # Allow access to some extra locations:
+  # owner @{HOME}/path/to/folder/ rw,
+  # owner @{HOME}/path/to/folder/** rw,
+
