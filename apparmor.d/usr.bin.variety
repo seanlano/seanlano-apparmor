@@ -1,0 +1,122 @@
+## AppArmor profile for Variety.
+## As can be seen by the length of this profile, Variety
+## accesses quite a lot of the system in order to do its
+## thing - hence this profile grants a large number of 
+## permissions. 
+
+# Last Modified: Wed Apr  6 14:13:16 2016
+#include <tunables/global>
+
+/usr/bin/variety {
+  #include <abstractions/base>
+  #include <abstractions/ubuntu-helpers>
+  #include <abstractions/ubuntu-browsers>
+  #include <abstractions/fonts>
+  #include <abstractions/gnome>
+  #include <abstractions/nameservice>
+  #include <abstractions/nvidia>
+  #include <abstractions/python>
+  #include <abstractions/dbus-accessibility>
+  #include <abstractions/dbus-session>
+  #include <abstractions/dbus>
+  #include <abstractions/ibus>
+  #include <abstractions/private-files-strict>
+
+
+  # PROC details
+  @{PROC}/@{pid}/** r,
+  @{PROC}/version r,
+  @{PROC}/modules r,
+  @{PROC}/driver r,
+  @{PROC}/driver/** r,
+  @{PROC} r,
+
+
+  # Fonts
+  owner @{HOME}/.local/share/fonts/ r,
+  owner @{HOME}/.local/share/fonts/** r,
+
+  # Per-user tmp directories
+  owner @{HOME}/tmp/**  rwkl,
+  owner @{HOME}/tmp/    rw,
+
+
+  # Global tmp directories
+  owner /var/tmp/**     rwklm,
+  /var/tmp/             rw,
+  owner /tmp/**         rwklm,
+  /tmp/                 rw,
+
+
+  # Allow glibc
+  /usr/share/glib-*/schemas/** r,
+
+
+  # Allow dconf read/write
+  owner /{,var/}run/user/*/dconf/user rw,
+  owner @{HOME}/.config/dconf/user rw,
+
+
+  # Allow reading various other things
+  /dev/tty rw,
+  /etc/lsb-release r,
+  /usr/share/nvidia-** r,
+  /etc/ImageMagick/** r,
+  /usr/share/ImageMagick** r,
+  /home/sean/.config/gtk-3.0/bookmarks r,
+
+
+  # Variety uses these executables to tell the system which wallpaper to show
+  # and to perform other manipulations. All will inherit the confinement of 
+  # this profile.
+  /{,usr/}bin/python2.7 rix,
+  /{,usr/}bin/variety rix,
+  /bin/dash rix,  
+  /bin/bash rix,  
+  /{,usr/}bin/gsettings rix,
+  /{,usr/}bin/timeout rix,
+  /bin/grep rix,
+  /{,usr/}bin/tail rix,
+  /{,usr/}bin/gconftool-2 rix,
+  /{,usr/}bin/env rix,
+  /{,usr/}bin/gvfs-trash rix,
+  /{,usr/}bin/fc-match rix,
+  /{,usr/}bin/convert.* rix,
+  /usr/lib/@{multiarch}/ImageMagick**/*.so* mrix,
+  owner @{HOME}/.config/variety/scripts/* ix,
+
+  # These exectuables are opened without confinement
+  # Not too bad though, they are only used to open URI locations
+  /{,usr/}bin/xdg-open Ux,
+  /{,usr/}bin/gvfs-open Ux,
+  /{,usr/}bin/gnome-open Ux,
+
+
+  # Allow access to common image locations
+  owner @{HOME}/.cache/thumbnails/** rw,
+  /usr/share/backgrounds/ r,
+  /usr/share/backgrounds/** r,
+
+
+  # Allow full access to config directory, and to trash
+  owner @{HOME}/.config/variety/ rw,
+  owner @{HOME}/.config/variety/** rw,
+  owner @{HOME}/.local/share/Trash/ rw,
+  owner @{HOME}/.local/share/Trash/** rwkl,
+  owner @{HOME}/.local/share/gvfs-metadata/ rw,
+  owner @{HOME}/.local/share/gvfs-metadata/** rwkl,
+  owner @{HOME}/magick* rwkl,
+
+
+  # Allow read access to default config directory
+  /usr/share/variety/ r,
+  /usr/share/variety/** r,
+
+
+  # Allow access to Pictures and Public folder
+  owner @{HOME}/Pictures/ rw,
+  owner @{HOME}/Pictures/** rw,
+  owner @{HOME}/Public/ rw,
+  owner @{HOME}/Public/** rw,
+
+}
