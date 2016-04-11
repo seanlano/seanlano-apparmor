@@ -3,11 +3,14 @@
 ## accesses quite a lot of the system in order to do its
 ## thing - hence this profile grants a large number of 
 ## permissions. 
+## This has been developed and tested on Ubuntu 14.04, with 
+## Variety 0.6.0
+## Enable with sudo aa-enable /etc/apparmor.d/usr.bin.variety
 
 # Last Modified: Wed Apr  6 14:13:16 2016
 #include <tunables/global>
 
-/usr/bin/variety {
+profile variety /usr/bin/variety{,-slideshow} {
   #include <abstractions/base>
   #include <abstractions/ubuntu-helpers>
   #include <abstractions/ubuntu-browsers>
@@ -37,15 +40,19 @@
   owner @{HOME}/.local/share/fonts/** r,
 
   # Per-user tmp directories
-  owner @{HOME}/tmp/**  rwkl,
   owner @{HOME}/tmp/    rw,
+  owner @{HOME}/tmp/**  rwklm,
+  owner @{HOME}/.nv/GLCache/	rw,
+  owner @{HOME}/.nv/GLCache/**	rwlkm,
 
 
   # Global tmp directories
-  owner /var/tmp/**     rwklm,
   /var/tmp/             rw,
-  owner /tmp/**         rwklm,
+  owner /var/tmp/**     rwklm,
   /tmp/                 rw,
+  owner /tmp/**         rwklm,
+  /run/shm/		rw,
+  owner /run/shm/**	rwklm,
 
 
   # Allow glibc
@@ -63,7 +70,7 @@
   /usr/share/nvidia-** r,
   /etc/ImageMagick/** r,
   /usr/share/ImageMagick** r,
-  /home/sean/.config/gtk-3.0/bookmarks r,
+  @{HOME}/.config/gtk-3.0/bookmarks r,
 
 
   # Variety uses these executables to tell the system which wallpaper to show
@@ -71,6 +78,7 @@
   # this profile.
   /{,usr/}bin/python2.7 rix,
   /{,usr/}bin/variety rix,
+  /{,usr/}bin/variety-slideshow rix,
   /bin/dash rix,  
   /bin/bash rix,  
   /{,usr/}bin/gsettings rix,
@@ -84,6 +92,10 @@
   /{,usr/}bin/convert.* rix,
   /usr/lib/@{multiarch}/ImageMagick**/*.so* mrix,
   owner @{HOME}/.config/variety/scripts/* ix,
+
+  # Uses killall when calling the slideshow binary, difficult to confine
+  /usr/bin/killall Ux,
+
 
   # These exectuables are opened without confinement
   # Not too bad though, they are only used to open URI locations
