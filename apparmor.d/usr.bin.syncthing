@@ -18,6 +18,7 @@
   # Obviously needs Internet access to work.
   network inet,
   network inet6,
+  network raw,
 
   # Wants read access to SOMAXCONN
   /proc/sys/net/core/somaxconn r,
