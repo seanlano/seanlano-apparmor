@@ -34,6 +34,11 @@
   /etc/gai.conf r,
   /etc/nsswitch.conf r,
   /etc/ssl/certs/** r,
+  
+  # Allow /tmp
+  /tmp/ rwk,
+  /tmp/** rwk,
+
 
   # Allow full access to config directory.
   owner @{HOME}/.config/syncthing/ rw,
