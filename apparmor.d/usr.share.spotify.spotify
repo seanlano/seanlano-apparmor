@@ -1,0 +1,44 @@
+# Created by Sean Lanigan. 
+# Allows confined use of the proprietary Spotify binary, last tested with 1.0.28 on Ubuntu 16.04.
+# Last Modified: Sun 30 Aug 2015
+
+#include <tunables/global>
+
+/usr/share/spotify/spotify {
+  #include <abstractions/audio>
+  #include <abstractions/base>
+  #include <abstractions/fonts>
+  #include <abstractions/dbus-strict>
+  #include <abstractions/ibus>
+  #include <abstractions/lightdm>
+  #include <abstractions/gnome>
+  #include <abstractions/dconf>
+  #include <abstractions/nameservice>
+  #include <abstractions/private-files-strict>
+
+  # Give some access to some user things
+  /home/*/.config/Trolltech.conf rwk,
+  /home/*/.pki/nssdb/* rw,
+  /home/*/.pki/nssdb/cert9.db rwk,
+  /home/*/.pki/nssdb/key4.db rwk,
+  owner @{HOME}/.local/share/fonts/ r,
+  owner @{HOME}/.local/share/fonts/** r,
+
+  # Give some access to some system things
+  @{PROC}/*/auxv r,
+  @{PROC}/*/oom_score_adj rw,
+  @{PROC}/sys/kernel/shmmax r,
+  @{PROC}/sys/kernel/yama/ptrace_scope r,
+
+  # Allow read, write and lock access to Spotify config and cache files
+  owner @{HOME}/.cache/spotify/ rw,
+  owner @{HOME}/.cache/spotify/** rwk,
+  owner @{HOME}/.config/spotify/ rw,
+  owner @{HOME}/.config/spotify/** rwk,
+  owner @{HOME}/.local/share/spotify/ rw,
+  owner @{HOME}/.local/share/spotify/** rwk,
+
+  # Read local music, no write permission given
+  owner @{HOME}/Music/ r,
+  owner @{HOME}/Music/** r,
+}
