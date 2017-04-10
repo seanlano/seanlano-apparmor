@@ -1,0 +1,135 @@
+# AppArmor profile to attempt to harden Adobe Reader.
+# Adobe have completely dropped support for Reader on 
+# Linux, and there are numerous unpatched vulnerabilities
+# in the package. 
+# ** USE AT YOUR OWN RISK! **
+# Adobe Reader for Linux should only be used when there
+# is no other alternative. In those special situations,
+# this profile will restrict accessing the Internet and
+# will deny access to most filepaths. It will only be
+# allowed to open files from the user's ~/Documents
+# folder. Note that there are possibly unknown ways that, 
+# even with AppArmor, a compromised PDF might be able to
+# cause some harm to your computer - only open files from
+# known locations which you must view and cannot do so using
+# Evince (the default Ubuntu PDF reader).
+# 
+# This has been tested on Ubuntu 16.04
+# 
+# 
+# Created by Sean Lanigan, 2017
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published
+# by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+# 
+# You should have received a copy of the GNU Affero General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+# 
+
+
+#include <tunables/global>
+
+/opt/Adobe/Reader9/bin/acroread {
+  #include <abstractions/base>
+  #include <abstractions/gnome>
+  #include <abstractions/dbus-session>
+  #include <abstractions/dbus-strict>
+  #include <abstractions/bash>
+  #include <abstractions/fonts>
+  #include <abstractions/private-files-strict>
+
+  ## Deny as much as possible without Acroreader breaking
+  deny /etc/fstab rw,
+  deny @{HOME}/.config/gtk-3.0/bookmarks rw,
+  deny @{HOME}/.local/share/recently-used.xbel* rw,
+  deny @{HOME}/.config/user-dirs.dirs rw,
+  deny /usr/share/poppler/** rwkl,
+  deny /var/cache/fontconfig/ wkl,
+  deny /var/cache/fontconfig/** wkl,
+  deny @{HOME}/.{,cache/}fontconfig/ wkl,
+  deny @{HOME}/.{,cache/}fontconfig/** wkl,
+  deny /etc/hosts rw,
+  deny /etc/host.conf rw,
+  deny /{,var/}run/resolvconf/resolv.conf r,
+  deny /etc/resolvconf/run/resolv.conf r,
+  deny @{PROC}/**/net/route r,
+  audit deny network inet,
+  audit deny network inet6,
+  audit deny network raw,
+  audit deny network dgram,
+  audit deny network packet,
+  audit deny network seqpacket,
+
+  ## Allow some system things
+  /etc/nsswitch.conf r,
+  /etc/passwd r,
+  /{dev,run}/shm/** rwkl,
+  /etc/group r,
+
+  ## PROC details
+  @{PROC}/@{pid}/** r,
+  @{PROC}/version r,
+  @{PROC}/modules r,
+  @{PROC}/filesystems r,
+  @{PROC}/meminfo r,
+  @{PROC} r,
+
+  ## Fonts
+  owner @{HOME}/.local/share/fonts/ r,
+  owner @{HOME}/.local/share/fonts/** r,
+
+  ## Per-user tmp directories
+  owner @{HOME}/tmp/    rw,
+  owner @{HOME}/tmp/**  rwkl,
+
+  ## Global tmp directories
+  owner /var/tmp/**     rwklm,
+  /var/tmp/             rw,
+  owner /tmp/**         rwklm,
+  /tmp/                 rw,
+
+  ## Binary execution, all confined with same profile
+  /bin/cat rix,
+  /bin/cp rix,
+  /bin/dash rix,  
+  /bin/bash rix,  
+  /bin/mkdir rix,
+  /bin/pwd rix,
+  /bin/rm rix,
+  /bin/sed rix,
+  /bin/uname rix,
+  /bin/which rix,
+  /usr/bin/cut rix,
+  /usr/bin/dirname rix,
+  /usr/bin/expr rix,
+  /usr/bin/basename rix,
+  /usr/bin/test rix,
+  /usr/bin/gconftool-2 rix,
+  /lib/** rix,
+  /opt/Adobe/** rix,
+
+  ## Config and default install folders
+  owner @{HOME}/.adobe/ rw,
+  owner @{HOME}/.adobe/** rwkl,
+
+  ## GNOME things
+  @{HOME}/.cache/thumbnails/** r,
+  @{HOME}/.config/gtk-2.0/* rw,
+  @{HOME}/.local/share/icons/ r,
+  @{HOME}/.local/share/icons/**/ r,
+  @{HOME}/.local/share/mime/mime.cache r,
+
+  ## Access is restricted to only the ~/Documents folder
+  owner @{HOME}/ r,
+  deny @{HOME}/* rwkl,
+  owner @{HOME}/Documents/ r,
+  owner @{HOME}/Documents/** rwkl,
+
+}
