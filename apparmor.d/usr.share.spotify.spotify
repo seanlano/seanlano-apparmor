@@ -1,6 +1,6 @@
 # Created by Sean Lanigan. 
-# Allows confined use of the proprietary Spotify binary, last tested with 1.0.28 on Ubuntu 16.04.
-# Last Modified: Sun 30 Aug 2015
+# Allows confined use of the proprietary Spotify binary, last tested with 1.0.49.125 on Ubuntu 17.04.
+# Last Modified: Wed 03 May 2017
 
 #include <tunables/global>
 
@@ -9,12 +9,13 @@
   #include <abstractions/base>
   #include <abstractions/fonts>
   #include <abstractions/dbus-strict>
+  #include <abstractions/dbus-session-strict>
   #include <abstractions/ibus>
-  #include <abstractions/lightdm>
   #include <abstractions/gnome>
   #include <abstractions/dconf>
   #include <abstractions/nameservice>
   #include <abstractions/private-files-strict>
+  dbus,
 
   # Give some access to some user things
   /home/*/.config/Trolltech.conf rwk,
@@ -23,12 +24,33 @@
   /home/*/.pki/nssdb/key4.db rwk,
   owner @{HOME}/.local/share/fonts/ r,
   owner @{HOME}/.local/share/fonts/** r,
+  owner /{,var/}run/user/*/dconf/user rw,
 
   # Give some access to some system things
+  /etc/machine-id r,
   @{PROC}/*/auxv r,
   @{PROC}/*/oom_score_adj rw,
   @{PROC}/sys/kernel/shmmax r,
   @{PROC}/sys/kernel/yama/ptrace_scope r,
+  @{PROC}/@{pid}/cmdline r,
+  @{PROC}/@{pid}/status r,
+  @{PROC}/@{pid}/fd/ r,
+  @{PROC}/@{pid}/fd/** r,
+  /sys/bus/pci/devices/ r,
+  /sys/devices/pci[0-9]*/**/class r,
+  /sys/devices/pci[0-9]*/**/device r,
+  /sys/devices/pci[0-9]*/**/irq r,
+  /sys/devices/pci[0-9]*/**/resource r,
+  /sys/devices/pci[0-9]*/**/vendor r,
+  /sys/devices/pci[0-9]*/**/idProduct r,
+  /sys/devices/pci[0-9]*/**/idVendor r,
+  /sys/devices/pci[0-9]*/**/uevent r,
+  /sys/devices/system/cpu/ r,
+  /sys/devices/system/cpu/** r,
+  /dev/shm/.org.chromium.Chromium.** rwk,
+  /etc/udev/udev.conf r, 
+  /usr/share/glib-2.0/schemas/** r,
+  /dev/dri/ r,  
 
   # Allow read, write and lock access to Spotify config and cache files
   owner @{HOME}/.cache/spotify/ rw,
@@ -37,6 +59,8 @@
   owner @{HOME}/.config/spotify/** rwk,
   owner @{HOME}/.local/share/spotify/ rw,
   owner @{HOME}/.local/share/spotify/** rwk,
+  
+  /usr/share/spotify/** rkix,
 
   # Read local music, no write permission given
   owner @{HOME}/Music/ r,
