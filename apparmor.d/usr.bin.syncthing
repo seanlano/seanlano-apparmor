@@ -26,6 +26,9 @@
   # Allow confined execute of binary
   /usr/bin/syncthing cx,
 
+  # Allow confined access to /bin/ip
+  /bin/ip rix,
+
   # Needs to be able to read these to work properly
   /run/resolvconf/resolv.conf r,
   /etc/resolv.conf r,
@@ -34,6 +37,8 @@
   /etc/gai.conf r,
   /etc/nsswitch.conf r,
   /etc/ssl/certs/** r,
+  /proc/sys/kernel/hostname r,
+  /run/systemd/resolve/stub-resolv.conf r,
   
   # Allow /tmp
   /tmp/ rwk,
@@ -67,3 +72,4 @@
   owner @{HOME}/Music/** rw,
 
 }
+
